@@ -137,6 +137,26 @@ public class ApplicationService {
         return ApplicationResponse.fromEntity(application);
     }
 
+    public List<ApplicationResponse> getApplicantsForJob(Long jobId, Authentication authentication) {
+        User user = getCurrentUser(authentication);
+
+        Job job = jobRepository.findById(jobId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found"));
+
+        if (user.getRole() == Role.EMPLOYER) {
+            if (job.getEmployer() == null || !job.getEmployer().getId().equals(user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not job owner");
+            }
+        } else if (user.getRole() != Role.SUPER_ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
+        return applicationRepository.findByJobId(jobId)
+            .stream()
+            .map(ApplicationResponse::fromEntity)
+            .toList();
+    }
+
     @Transactional(readOnly = true)
     public ScreeningResultResponse getScreeningResult(Long applicationId, Authentication authentication) {
         User user = getCurrentUser(authentication);

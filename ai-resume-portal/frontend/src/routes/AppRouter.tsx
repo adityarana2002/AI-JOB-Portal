@@ -7,7 +7,14 @@ import AdminLayout from '../layouts/AdminLayout'
 import LoginPage from '../pages/auth/LoginPage'
 import RegisterPage from '../pages/auth/RegisterPage'
 import EmployerDashboard from '../pages/employer/Dashboard'
+import PostJob from '../pages/employer/PostJob'
+import MyJobs from '../pages/employer/MyJobs'
+import ViewApplicants from '../pages/employer/ViewApplicants'
 import JobSeekerDashboard from '../pages/jobseeker/Dashboard'
+import BrowseJobs from '../pages/jobseeker/BrowseJobs'
+import ApplyJob from '../pages/jobseeker/ApplyJob'
+import MyApplications from '../pages/jobseeker/MyApplications'
+import ScreeningResult from '../pages/jobseeker/ScreeningResult'
 import AdminDashboard from '../pages/admin/Dashboard'
 import PlaceholderPage from '../pages/PlaceholderPage'
 import { getHomePath } from './routeUtils'
@@ -82,8 +89,9 @@ const AppRouter = () => (
       <Route path="/employer" element={<EmployerLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<EmployerDashboard />} />
-        <Route path="post-job" element={<PlaceholderPage title="Post a Job" />} />
-        <Route path="my-jobs" element={<PlaceholderPage title="My Jobs" />} />
+        <Route path="post-job" element={<PostJob />} />
+        <Route path="my-jobs" element={<MyJobs />} />
+        <Route path="jobs/:jobId/applicants" element={<ViewApplicants />} />
       </Route>
     </Route>
 
@@ -91,8 +99,10 @@ const AppRouter = () => (
       <Route path="/jobseeker" element={<JobSeekerLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<JobSeekerDashboard />} />
-        <Route path="browse" element={<PlaceholderPage title="Browse Jobs" />} />
-        <Route path="applications" element={<PlaceholderPage title="My Applications" />} />
+        <Route path="browse" element={<BrowseJobs />} />
+        <Route path="apply/:jobId" element={<ApplyJob />} />
+        <Route path="applications" element={<MyApplications />} />
+        <Route path="screening/:applicationId" element={<ScreeningResult />} />
       </Route>
     </Route>
 

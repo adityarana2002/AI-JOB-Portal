@@ -1,5 +1,7 @@
 package com.portal.job.controller;
 
+import com.portal.application.dto.ApplicationResponse;
+import com.portal.application.service.ApplicationService;
 import com.portal.job.dto.JobRequest;
 import com.portal.job.dto.JobResponse;
 import com.portal.job.service.JobService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobController {
 
     private final JobService jobService;
+    private final ApplicationService applicationService;
 
     @PostMapping
     public ResponseEntity<JobResponse> createJob(
@@ -45,6 +48,14 @@ public class JobController {
     @GetMapping("/{id}")
     public ResponseEntity<JobResponse> getJobById(@PathVariable Long id) {
         return ResponseEntity.ok(jobService.getJobById(id));
+    }
+
+    @GetMapping("/{id}/applicants")
+    public ResponseEntity<List<ApplicationResponse>> getApplicants(
+        @PathVariable Long id,
+        Authentication authentication
+    ) {
+        return ResponseEntity.ok(applicationService.getApplicantsForJob(id, authentication));
     }
 
     @PutMapping("/{id}")

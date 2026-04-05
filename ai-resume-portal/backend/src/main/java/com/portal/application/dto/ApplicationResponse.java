@@ -18,6 +18,8 @@ public class ApplicationResponse {
     private Long jobId;
     private String jobTitle;
     private Long applicantId;
+    private String applicantName;
+    private String applicantEmail;
     private ApplicationStatus status;
     private String resumePath;
     private String coverLetter;
@@ -32,6 +34,8 @@ public class ApplicationResponse {
         }
         if (application.getApplicant() != null) {
             response.setApplicantId(application.getApplicant().getId());
+            response.setApplicantName(application.getApplicant().getFullName());
+            response.setApplicantEmail(application.getApplicant().getEmail());
         }
         response.setStatus(application.getStatus());
         response.setResumePath(application.getResumePath());

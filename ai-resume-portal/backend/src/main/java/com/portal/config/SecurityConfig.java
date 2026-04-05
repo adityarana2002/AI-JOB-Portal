@@ -45,6 +45,7 @@ public class SecurityConfig {
                     "/swagger-ui/**",
                     "/swagger-ui.html"
                 ).permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/jobs/*/applicants").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs", "/api/jobs/*").permitAll()
                 .requestMatchers("/api/applications/**").authenticated()
