@@ -1,0 +1,60 @@
+# ===================================================================
+# AI Resume Screening Portal — Application Configuration
+# ===================================================================
+
+server:
+  port: 8080
+
+# ==================== DATABASE ====================
+spring:
+  application:
+    name: ai-resume-portal
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_resume_portal?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+  # ==================== FILE UPLOAD ====================
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # ==================== OLLAMA AI ====================
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: deepseek-coder:6.7b
+          temperature: 0.0
+          num-predict: 4096
+
+# ==================== JWT ====================
+app:
+  jwt:
+    secret: YWktcmVzdW1lLXBvcnRhbC1zdXBlci1zZWNyZXQta2V5LWZvci1qd3QtdG9rZW4tZ2VuZXJhdGlvbi0yMDI0
+    expiration-ms: 86400000  # 24 hours
+
+# ==================== FILE STORAGE ====================
+  file:
+    upload-dir: ./uploads
+
+# ==================== LOGGING ====================
+logging:
+  level:
+    com.portal: DEBUG
+    org.springframework.ai: DEBUG
+    org.hibernate.SQL: DEBUG
