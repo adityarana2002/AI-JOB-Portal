@@ -16,7 +16,10 @@ import ApplyJob from '../pages/jobseeker/ApplyJob'
 import MyApplications from '../pages/jobseeker/MyApplications'
 import ScreeningResult from '../pages/jobseeker/ScreeningResult'
 import AdminDashboard from '../pages/admin/Dashboard'
-import PlaceholderPage from '../pages/PlaceholderPage'
+import UserManagement from '../pages/admin/UserManagement'
+import AllJobs from '../pages/admin/AllJobs'
+import AllApplicants from '../pages/admin/AllApplicants'
+import ScreeningReports from '../pages/admin/ScreeningReports'
 import { getHomePath } from './routeUtils'
 import type { UserRole } from '../types/user'
 
@@ -110,8 +113,10 @@ const AppRouter = () => (
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="users" element={<PlaceholderPage title="User Management" />} />
-        <Route path="jobs" element={<PlaceholderPage title="All Jobs" />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="jobs" element={<AllJobs />} />
+        <Route path="applications" element={<AllApplicants />} />
+        <Route path="screenings" element={<ScreeningReports />} />
       </Route>
     </Route>
 
