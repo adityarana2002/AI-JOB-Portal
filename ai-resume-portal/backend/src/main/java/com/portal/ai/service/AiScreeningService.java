@@ -2,6 +2,7 @@ package com.portal.ai.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.portal.ai.dto.AiScreeningPayload;
 import com.portal.ai.dto.AiTestRequest;
 import com.portal.ai.dto.AiTestResponse;
 import com.portal.ai.dto.LearningPlanItem;
@@ -24,29 +25,79 @@ public class AiScreeningService {
     private final ObjectMapper objectMapper;
 
     public AiTestResponse runTest(AiTestRequest request) {
-        ScreeningResult screening = screenResume(request);
-        List<LearningPlanItem> learningPlan = Collections.emptyList();
-        List<YoutubeRecommendation> youtubeRecommendations = Collections.emptyList();
-
-        if (Boolean.FALSE.equals(screening.getIsEligible())) {
-            learningPlan = generateLearningPlan(screening.getMissingSkills(), request.getJobTitle());
-            youtubeRecommendations = generateYoutubeRecommendations(screening.getMissingSkills());
-        }
-
-        return new AiTestResponse(screening, learningPlan, youtubeRecommendations);
-    }
-
-    public ScreeningResult screenResume(AiTestRequest request) {
-        String prompt = PromptTemplates.buildScreeningPrompt(
+        AiScreeningPayload payload = runScreening(
             request.getJobTitle(),
             request.getJobDescription(),
             request.getRequiredSkills(),
             request.getExperienceRequired(),
             request.getResumeText()
         );
-        String raw = callModel(prompt);
-        String json = extractJson(raw);
-        return parseJson(json, ScreeningResult.class);
+        return new AiTestResponse(
+            payload.getScreeningResult(),
+            payload.getLearningPlan(),
+            payload.getYoutubeRecommendations()
+        );
+    }
+
+    public AiScreeningPayload runScreening(
+        String jobTitle,
+        String jobDescription,
+        String requiredSkills,
+        String experienceRequired,
+        String resumeText
+    ) {
+        String screeningPrompt = PromptTemplates.buildScreeningPrompt(
+            jobTitle,
+            jobDescription,
+            requiredSkills,
+            experienceRequired,
+            resumeText
+        );
+        String screeningRaw = callModel(screeningPrompt);
+        String screeningJson = extractJson(screeningRaw);
+        ScreeningResult screening = parseJson(screeningJson, ScreeningResult.class);
+
+        List<LearningPlanItem> learningPlan = Collections.emptyList();
+        List<YoutubeRecommendation> youtubeRecommendations = Collections.emptyList();
+        String learningPlanRaw = null;
+        String youtubeRaw = null;
+
+        if (Boolean.FALSE.equals(screening.getIsEligible())) {
+            String learningPrompt = PromptTemplates.buildLearningPlanPrompt(
+                screening.getMissingSkills(),
+                jobTitle
+            );
+            learningPlanRaw = callModel(learningPrompt);
+            String learningJson = extractJson(learningPlanRaw);
+            learningPlan = parseJson(learningJson, new TypeReference<List<LearningPlanItem>>() {});
+
+            String youtubePrompt = PromptTemplates.buildYoutubePrompt(screening.getMissingSkills());
+            youtubeRaw = callModel(youtubePrompt);
+            String youtubeJson = extractJson(youtubeRaw);
+            youtubeRecommendations = parseJson(
+                youtubeJson,
+                new TypeReference<List<YoutubeRecommendation>>() {}
+            );
+        }
+
+        return new AiScreeningPayload(
+            screening,
+            learningPlan,
+            youtubeRecommendations,
+            screeningRaw,
+            learningPlanRaw,
+            youtubeRaw
+        );
+    }
+
+    public ScreeningResult screenResume(AiTestRequest request) {
+        return runScreening(
+            request.getJobTitle(),
+            request.getJobDescription(),
+            request.getRequiredSkills(),
+            request.getExperienceRequired(),
+            request.getResumeText()
+        ).getScreeningResult();
     }
 
     public List<LearningPlanItem> generateLearningPlan(List<String> missingSkills, String jobTitle) {

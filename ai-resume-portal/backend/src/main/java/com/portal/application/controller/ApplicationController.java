@@ -1,6 +1,7 @@
 package com.portal.application.controller;
 
 import com.portal.application.dto.ApplicationResponse;
+import com.portal.application.dto.ScreeningResultResponse;
 import com.portal.application.service.ApplicationService;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -44,5 +45,13 @@ public class ApplicationController {
         Authentication authentication
     ) {
         return ResponseEntity.ok(applicationService.getApplicationById(id, authentication));
+    }
+
+    @GetMapping("/{id}/screening")
+    public ResponseEntity<ScreeningResultResponse> getScreeningResult(
+        @PathVariable Long id,
+        Authentication authentication
+    ) {
+        return ResponseEntity.ok(applicationService.getScreeningResult(id, authentication));
     }
 }

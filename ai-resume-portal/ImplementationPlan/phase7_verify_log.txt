@@ -1,0 +1,8 @@
+Phase 7 verification started
+[2026-04-05 22:30:43] Registered employer and seeker
+[2026-04-05 22:30:46] Logged in employer and seeker
+[2026-04-05 22:30:46] Created job 10
+[2026-04-05 22:30:46] Applying to job
+[2026-04-05 22:54:27] Apply response length: 307
+[2026-04-05 22:54:27] Applied to job. Application 6
+[2026-04-05 22:54:27] Retrieved screening 5
