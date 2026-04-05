@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface JobRepository extends JpaRepository<Job, Long> {
     List<Job> findByEmployerId(Long employerId);
+
+    List<Job> findByIsActiveTrue();
 }

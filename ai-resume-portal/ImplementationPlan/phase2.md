@@ -1,7 +1,7 @@
 # Phase 2 Report - Database Entities and Repositories
 
 Date: 2026-04-05
-Status: Completed (artifact-level). Database verification pending.
+Status: Completed and verified (database tables created).
 
 ## Scope
 - JPA entities for users, jobs, job applications, and screening results
@@ -20,12 +20,12 @@ Status: Completed (artifact-level). Database verification pending.
 - Screening result entity: P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\ai\entity\ScreeningResult.java
 - Repositories: P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\user\repository\UserRepository.java, JobRepository.java, ApplicationRepository.java, ScreeningResultRepository.java
 
-## Verification (Pending)
-- Start backend and confirm tables are created in MySQL:
+## Verification (Completed)
+- Backend started and tables confirmed in MySQL:
   - users
   - jobs
   - job_applications
   - screening_results
 
 ## Notes
-- Phase 2 completion is based on code and configuration artifacts present in the repository. Database verification has not been executed in this review.
+- Phase 2 completion is based on code and configuration artifacts present in the repository, and verified by table creation in MySQL.
