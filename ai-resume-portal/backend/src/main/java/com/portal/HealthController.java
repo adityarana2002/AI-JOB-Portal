@@ -17,7 +17,7 @@ public class HealthController {
         return Map.of(
             "status", "UP",
             "application", "AI Resume Screening Portal",
-            "phase", "Phase 3 - Auth Implemented"
+            "phase", "Phase 6 - AI Integration Implemented"
         );
     }
 }

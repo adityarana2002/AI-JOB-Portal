@@ -47,6 +47,8 @@ public class SecurityConfig {
                 ).permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs", "/api/jobs/*").permitAll()
+                .requestMatchers("/api/applications/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/api/ai/test").hasRole("SUPER_ADMIN")
                 .anyRequest().authenticated()
             );
 

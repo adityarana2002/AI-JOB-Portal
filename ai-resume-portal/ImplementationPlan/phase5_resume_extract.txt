@@ -1,0 +1,88 @@
+﻿
+   
+
+ 
+
+ 
+
+ADITYA RANA 
+(+91) 8126113062 | adityarana1140@gmail.com  
+
+https://www.linkedin.com/in/aditya-rana-48657a240/ 
+
+https://github.com/adityarana2002 
+ 
+
+Skills 
+
+ΓùÅ Core Java 
+
+ΓùÅ Spring, Spring Boot, Spring MVC  
+
+ΓùÅ Spring Security REST APIs 
+
+ΓùÅ Hibernate, JPA 
+
+ΓùÅ DataBase (MySQL) 
+
+ΓùÅ HTML, CSS, Thymeleaf  
+
+ΓùÅ GIT, GITHUB 
+
+Projects 
+
+AI Resume Builder ΓÇô Spring Boot, Ollama, React, MySQL  
+
+ΓùÅ Built an AI-powered resume generator that creates personalized, ATS-friendly resumes. 
+
+ΓùÅ Integrated Ollama LLM with Spring Boot REST APIs for intelligent content generation. 
+
+ΓùÅ Developed a React frontend with real-time preview and PDF/Word export. 
+
+ΓùÅ Implemented authentication, templates, and MySQL storage for secure user data. 
+
+E-commerce Website ΓÇô Spring Boot, Thymeleaf, MySQL, Spring Security  
+
+ΓùÅ Developed a full-stack e-commerce app with product catalog, cart, and checkout. 
+
+ΓùÅ Secured access using Spring Security role-based authentication (Admin/User). 
+
+ΓùÅ Used JPA/Hibernate with MySQL for persistence and optimized transactions. 
+
+ΓùÅ Designed a responsive UI with Thymeleaf + Bootstrap for better UX. 
+
+Personal Portfolio Website ΓÇô HTML, CSS, JS, Spring Boot, Thymeleaf, MySQL 
+
+ΓùÅ Created a responsive portfolio website showcasing skills, projects, and resume. 
+
+ΓùÅ Built a dynamic contact form with Spring Boot + MySQL backend storage. 
+
+ΓùÅ Configured email notifications for instant alerts on new messages. 
+
+ΓùÅ Implemented Thymeleaf + Bootstrap for professional design and navigation. 
+
+Certifications 
+
+HA CK E R RAN K JA VA ( BA SI C ) | JAN  2024   
+
+ΓùÅ Validated skills in core Java concepts, Data Structures, and problem solving. 
+
+IoT Training | Samsung Innovation Campus | 
+
+ΓùÅ Learned IoT fundamentals, sensor networks, and data visualization. 
+
+ΓùÅ Hands-on experience with Arduino/Raspberry Pi 
+
+Education 
+
+Bachelor of Technology (BTech) in Computer Science  
+
+Gurukula Kangri Vishwavidyalaya, Haridwar | 2023 ΓÇô 2026 (Expected Graduation) 
+Current GPA: 8.4 CGPA (till 6th semester) 
+ 
+Diploma in Computer Science 
+
+Ambedkar Institute of Technology, New Delhi | 2020 - 2023 
+Score: 82% 
+
+
