@@ -4,19 +4,35 @@ const AuthLayout = () => (
   <div className="auth-shell">
     <section className="auth-hero">
       <div className="auth-hero__inner">
-        <span className="badge">AI Resume Portal</span>
-        <h1>Hire with clarity. Apply with confidence.</h1>
+        <div className="brand-block">
+          <img className="brand-logo brand-logo-hero" src={new URL('../images/app-logo.png', import.meta.url).href} alt="ScreenIQ" />
+        </div>
+        <span className="hero-kicker">AI Recruitment &amp; Matching</span>
+        <h1>Precision hiring intelligence for modern teams.</h1>
         <p>
-          Automate resume screening with a transparent scoring system, and give
-          candidates an actionable learning path.
+          Move from resume overload to high-confidence decisions with transparent
+          fit scoring, actionable feedback, and role-based workflows.
         </p>
-        <div className="card" style={{ marginTop: '32px', background: 'rgba(255, 255, 255, 0.1)' }}>
-          <strong>What you get</strong>
-          <div className="chip-list" style={{ marginTop: '12px' }}>
-            <span className="chip">Match scores</span>
-            <span className="chip">Skill gaps</span>
-            <span className="chip">7-day plans</span>
-            <span className="chip">Faster hiring</span>
+        <div className="auth-hero__panel">
+          <strong>Why ScreenIQ</strong>
+          <ul className="value-list">
+            <li>Evidence-backed candidate scorecards</li>
+            <li>Automated skill-gap summaries</li>
+            <li>Actionable 7-day learning plans</li>
+          </ul>
+        </div>
+        <div className="auth-hero__stats">
+          <div className="auth-stat reveal-1">
+            <span className="auth-stat__label">Avg screening time</span>
+            <strong className="auth-stat__value">12 sec</strong>
+          </div>
+          <div className="auth-stat reveal-2">
+            <span className="auth-stat__label">Pipeline clarity</span>
+            <strong className="auth-stat__value">93%</strong>
+          </div>
+          <div className="auth-stat reveal-3">
+            <span className="auth-stat__label">Actionable insights</span>
+            <strong className="auth-stat__value">7-day plans</strong>
           </div>
         </div>
       </div>

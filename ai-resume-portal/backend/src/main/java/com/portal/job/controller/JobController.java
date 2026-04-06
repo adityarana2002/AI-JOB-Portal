@@ -1,6 +1,7 @@
 package com.portal.job.controller;
 
 import com.portal.application.dto.ApplicationResponse;
+import com.portal.application.dto.CandidateRankingResponse;
 import com.portal.application.service.ApplicationService;
 import com.portal.job.dto.JobRequest;
 import com.portal.job.dto.JobResponse;
@@ -56,6 +57,14 @@ public class JobController {
         Authentication authentication
     ) {
         return ResponseEntity.ok(applicationService.getApplicantsForJob(id, authentication));
+    }
+
+    @GetMapping("/{id}/rankings")
+    public ResponseEntity<List<CandidateRankingResponse>> getRankedApplicants(
+        @PathVariable Long id,
+        Authentication authentication
+    ) {
+        return ResponseEntity.ok(applicationService.getRankedApplicantsForJob(id, authentication));
     }
 
     @PutMapping("/{id}")

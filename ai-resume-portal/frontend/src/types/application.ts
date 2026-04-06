@@ -12,3 +12,15 @@ export interface Application {
   coverLetter?: string | null
   createdAt?: string | null
 }
+
+export interface CandidateRanking {
+  applicationId: number
+  jobId?: number | null
+  applicantId?: number | null
+  applicantName?: string | null
+  applicantEmail?: string | null
+  status: ApplicationStatus
+  matchScore?: number | null
+  rankingReason?: string | null
+  createdAt?: string | null
+}

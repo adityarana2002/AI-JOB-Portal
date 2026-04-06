@@ -1,3 +1,4 @@
 com\portal\admin\controller\AdminController.class
 com\portal\ai\dto\AiTestResponse.class
+com\portal\application\service\ApplicationService$7.class
 com\portal\auth\service\AuthService.class

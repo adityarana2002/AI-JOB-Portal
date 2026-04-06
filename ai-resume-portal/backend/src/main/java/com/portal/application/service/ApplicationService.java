@@ -9,6 +9,7 @@ import com.portal.ai.dto.YoutubeRecommendation;
 import com.portal.ai.repository.ScreeningResultRepository;
 import com.portal.ai.service.AiScreeningService;
 import com.portal.application.dto.ApplicationResponse;
+import com.portal.application.dto.CandidateRankingResponse;
 import com.portal.application.dto.ScreeningResultResponse;
 import com.portal.application.entity.ApplicationStatus;
 import com.portal.application.entity.JobApplication;
@@ -21,7 +22,9 @@ import com.portal.user.entity.Role;
 import com.portal.user.entity.User;
 import com.portal.user.repository.UserRepository;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -158,6 +161,54 @@ public class ApplicationService {
     }
 
     @Transactional(readOnly = true)
+    public List<CandidateRankingResponse> getRankedApplicantsForJob(Long jobId, Authentication authentication) {
+        User user = getCurrentUser(authentication);
+
+        Job job = jobRepository.findById(jobId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Job not found"));
+
+        if (user.getRole() == Role.EMPLOYER) {
+            if (job.getEmployer() == null || !job.getEmployer().getId().equals(user.getId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not job owner");
+            }
+        } else if (user.getRole() != Role.SUPER_ADMIN) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access denied");
+        }
+
+        List<JobApplication> applications = applicationRepository.findByJobId(jobId);
+        List<com.portal.ai.entity.ScreeningResult> screeningResults = screeningResultRepository.findByApplicationJobId(jobId);
+
+        Map<Long, com.portal.ai.entity.ScreeningResult> screeningByApplicationId = new HashMap<>();
+        for (com.portal.ai.entity.ScreeningResult screeningResult : screeningResults) {
+            if (screeningResult.getApplication() != null && screeningResult.getApplication().getId() != null) {
+                screeningByApplicationId.putIfAbsent(screeningResult.getApplication().getId(), screeningResult);
+            }
+        }
+
+        return applications.stream()
+            .map(application -> CandidateRankingResponse.fromEntities(
+                application,
+                screeningByApplicationId.get(application.getId())
+            ))
+            .sorted(
+                Comparator
+                    .comparing(
+                        CandidateRankingResponse::getMatchScore,
+                        Comparator.nullsLast(Comparator.reverseOrder())
+                    )
+                    .thenComparing(
+                        CandidateRankingResponse::getStatus,
+                        Comparator.comparingInt(this::statusPriority).reversed()
+                    )
+                    .thenComparing(
+                        CandidateRankingResponse::getCreatedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())
+                    )
+            )
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
     public ScreeningResultResponse getScreeningResult(Long applicationId, Authentication authentication) {
         User user = getCurrentUser(authentication);
 
@@ -251,5 +302,19 @@ public class ApplicationService {
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to parse screening data", ex);
         }
+    }
+
+    private int statusPriority(ApplicationStatus status) {
+        if (status == null) {
+            return 0;
+        }
+
+        return switch (status) {
+            case SHORTLISTED -> 5;
+            case SCREENED -> 4;
+            case SCREENING -> 3;
+            case PENDING -> 2;
+            case REJECTED -> 1;
+        };
     }
 }

@@ -1,10 +1,111 @@
 :root {
+  /* ── Typography ────────────────────────────────── */
   --font-sans: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
   --font-display: 'Fraunces', 'Georgia', serif;
-  --ink: #141619;
-  --muted: #6b7280;
-  --accent: #0f766e;
-  --accent-strong: #0d9488;
-  --accent-warm: #f97316;
-  --shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  --text-xs: 0.75rem;
+  --text-sm: 0.85rem;
+  --text-base: 0.95rem;
+  --text-md: 1.05rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.4rem;
+  --text-2xl: 1.8rem;
+  --text-3xl: 2.2rem;
+
+  /* ── Core Palette ──────────────────────────────── */
+  --ink: #061731;
+  --ink-light: #1e3a5f;
+  --muted: #5f738d;
+  --muted-light: #8a9bb5;
+  --surface: #ffffff;
+  --surface-raised: #f8fbff;
+  --surface-soft: #eef5ff;
+  --surface-muted: #f1f5f9;
+  --border: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.15);
+
+  /* ── Brand Accent ──────────────────────────────── */
+  --accent: #0891b2;
+  --accent-light: #22d3ee;
+  --accent-strong: #06b6d4;
+  --accent-deep: #0b315b;
+  --accent-warm: #0d6fa6;
+  --accent-bg: rgba(8, 145, 178, 0.08);
+  --accent-bg-strong: rgba(8, 145, 178, 0.15);
+
+  /* ── Role Accents ──────────────────────────────── */
+  --role-employer: #6366f1;
+  --role-employer-bg: rgba(99, 102, 241, 0.08);
+  --role-employer-border: rgba(99, 102, 241, 0.2);
+  --role-seeker: #0d9488;
+  --role-seeker-bg: rgba(13, 148, 136, 0.08);
+  --role-seeker-border: rgba(13, 148, 136, 0.2);
+  --role-admin: #d97706;
+  --role-admin-bg: rgba(217, 119, 6, 0.08);
+  --role-admin-border: rgba(217, 119, 6, 0.2);
+
+  /* ── Semantic Status ───────────────────────────── */
+  --success: #059669;
+  --success-bg: rgba(5, 150, 105, 0.1);
+  --success-border: rgba(5, 150, 105, 0.25);
+  --warning: #d97706;
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  --warning-border: rgba(217, 119, 6, 0.25);
+  --danger: #dc2626;
+  --danger-bg: rgba(220, 38, 38, 0.08);
+  --danger-border: rgba(220, 38, 38, 0.2);
+  --info: #2563eb;
+  --info-bg: rgba(37, 99, 235, 0.08);
+  --info-border: rgba(37, 99, 235, 0.2);
+
+  /* ── Shadows ───────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(7, 34, 68, 0.05);
+  --shadow-sm: 0 2px 8px rgba(7, 34, 68, 0.07);
+  --shadow: 0 8px 24px rgba(7, 34, 68, 0.1);
+  --shadow-md: 0 12px 32px rgba(7, 34, 68, 0.12);
+  --shadow-lg: 0 20px 48px rgba(7, 34, 68, 0.16);
+  --shadow-glow: 0 0 24px rgba(8, 145, 178, 0.2);
+  --shadow-card-hover: 0 16px 40px rgba(7, 34, 68, 0.15);
+
+  /* ── Glass ─────────────────────────────────────── */
+  --glass-bg: rgba(255, 255, 255, 0.65);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-dark-bg: rgba(4, 15, 30, 0.4);
+  --glass-dark-border: rgba(186, 242, 255, 0.15);
+
+  /* ── Spacing ───────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ── Radius ────────────────────────────────────── */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 999px;
+
+  /* ── Transitions ───────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+
+  /* ── Sidebar ───────────────────────────────────── */
+  --sidebar-width: 272px;
+  --sidebar-bg: #0c1529;
+  --sidebar-active-bg: rgba(248, 250, 252, 0.08);
+  --sidebar-hover-bg: rgba(248, 250, 252, 0.05);
+  --sidebar-text: #94a3b8;
+  --sidebar-text-active: #f1f5f9;
 }

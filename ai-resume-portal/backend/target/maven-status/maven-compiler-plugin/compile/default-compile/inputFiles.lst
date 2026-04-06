@@ -41,6 +41,7 @@ P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\admin
 P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\auth\dto\AuthResponse.java
 P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\job\entity\Job.java
 P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\auth\service\CustomUserDetailsService.java
+P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\application\dto\CandidateRankingResponse.java
 P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\resume\service\ResumeStorageService.java
 P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\application\controller\ApplicationController.java
 P:\College Major Project\ai-resume-portal\backend\src\main\java\com\portal\application\entity\JobApplication.java

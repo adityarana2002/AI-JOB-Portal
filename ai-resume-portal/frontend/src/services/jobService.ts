@@ -1,6 +1,6 @@
 import api from './api'
 import type { Job, JobRequest } from '../types/job'
-import type { Application } from '../types/application'
+import type { Application, CandidateRanking } from '../types/application'
 
 const listJobs = async () => {
   const { data } = await api.get<Job[]>('/jobs')
@@ -36,4 +36,9 @@ const getApplicants = async (jobId: number) => {
   return data
 }
 
-export default { listJobs, getJob, createJob, updateJob, deleteJob, getMyJobs, getApplicants }
+const getRankings = async (jobId: number) => {
+  const { data } = await api.get<CandidateRanking[]>(`/jobs/${jobId}/rankings`)
+  return data
+}
+
+export default { listJobs, getJob, createJob, updateJob, deleteJob, getMyJobs, getApplicants, getRankings }
