@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import authService from '../../services/authService'
 import type { UserRole } from '../../types/user'
 
 const RegisterPage = () => {
   const { register } = useAuth()
+  const [step, setStep] = useState<'form' | 'otp'>('form')
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -16,16 +18,77 @@ const RegisterPage = () => {
   const [showPw, setShowPw] = useState(false)
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
+  const [otpSending, setOtpSending] = useState(false)
+  const [otpVerifying, setOtpVerifying] = useState(false)
+  const [otpResendTimer, setOtpResendTimer] = useState(0)
+  const otpInputRefs = useRef<(HTMLInputElement | null)[]>([])
 
   const updateField = (key: string, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  // Resend timer
+  useEffect(() => {
+    if (otpResendTimer <= 0) return
+    const interval = setInterval(() => {
+      setOtpResendTimer(prev => prev <= 1 ? 0 : prev - 1)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [otpResendTimer])
+
+  const handleSendOtp = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setSubmitting(true)
     setError('')
     try {
+      await authService.sendOtp(form.email)
+      setStep('otp')
+      setOtpResendTimer(60)
+      setTimeout(() => otpInputRefs.current[0]?.focus(), 100)
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Failed to send verification code.'
+      setError(msg)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return
+    const newDigits = [...otpDigits]
+    newDigits[index] = value.slice(-1)
+    setOtpDigits(newDigits)
+    if (value && index < 5) {
+      otpInputRefs.current[index + 1]?.focus()
+    }
+  }
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      otpInputRefs.current[index - 1]?.focus()
+    }
+  }
+
+  const handleOtpPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault()
+    const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+    const newDigits = [...otpDigits]
+    for (let i = 0; i < paste.length; i++) {
+      newDigits[i] = paste[i]
+    }
+    setOtpDigits(newDigits)
+    const focusIdx = Math.min(paste.length, 5)
+    otpInputRefs.current[focusIdx]?.focus()
+  }
+
+  const handleVerifyAndRegister = async () => {
+    const otp = otpDigits.join('')
+    if (otp.length !== 6) { setError('Please enter the full 6-digit code.'); return }
+    setOtpVerifying(true)
+    setError('')
+    try {
+      await authService.verifyOtp(form.email, otp)
       await register({
         fullName: form.fullName,
         email: form.email,
@@ -34,12 +97,96 @@ const RegisterPage = () => {
         phone: form.phone || undefined,
         companyName: form.role === 'EMPLOYER' ? form.companyName : undefined,
       })
-    } catch (err) {
-      setError('Registration failed. Please check your details.')
-      console.error(err)
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || 'Verification failed. Please check the code.'
+      setError(msg)
     } finally {
-      setSubmitting(false)
+      setOtpVerifying(false)
     }
+  }
+
+  const handleResendOtp = async () => {
+    setOtpSending(true)
+    setError('')
+    try {
+      await authService.sendOtp(form.email)
+      setOtpResendTimer(60)
+      setOtpDigits(['', '', '', '', '', ''])
+      otpInputRefs.current[0]?.focus()
+    } catch {
+      setError('Failed to resend code.')
+    } finally {
+      setOtpSending(false)
+    }
+  }
+
+  if (step === 'otp') {
+    return (
+      <div>
+        <div className="auth-page__header">
+          <div className="otp-icon-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="40" height="40">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              <circle cx="12" cy="16" r="1"/>
+            </svg>
+          </div>
+          <span className="auth-kicker">Email verification</span>
+          <h2>Check your inbox</h2>
+          <p>We sent a 6-digit code to <strong>{form.email}</strong></p>
+        </div>
+        <div className="otp-container">
+          <div className="otp-inputs" onPaste={handleOtpPaste}>
+            {otpDigits.map((digit, i) => (
+              <input
+                key={i}
+                ref={el => { otpInputRefs.current[i] = el }}
+                type="text"
+                inputMode="numeric"
+                maxLength={1}
+                className={`otp-input${digit ? ' otp-input--filled' : ''}`}
+                value={digit}
+                onChange={e => handleOtpChange(i, e.target.value)}
+                onKeyDown={e => handleOtpKeyDown(i, e)}
+                autoFocus={i === 0}
+                id={`otp-digit-${i}`}
+              />
+            ))}
+          </div>
+          {error && (
+            <div className="form-error" style={{ marginTop: 12 }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              {error}
+            </div>
+          )}
+          <button
+            className="button"
+            onClick={handleVerifyAndRegister}
+            disabled={otpVerifying || otpDigits.join('').length < 6}
+            style={{ marginTop: 20, width: '100%' }}
+            id="verify-otp-submit"
+          >
+            {otpVerifying ? <><span className="btn-spinner" /> Verifying...</> : 'Verify & Create Account'}
+          </button>
+          <div className="otp-resend">
+            {otpResendTimer > 0 ? (
+              <span>Resend code in <strong>{otpResendTimer}s</strong></span>
+            ) : (
+              <button
+                className="link-button"
+                onClick={handleResendOtp}
+                disabled={otpSending}
+              >
+                {otpSending ? 'Sending...' : 'Resend verification code'}
+              </button>
+            )}
+          </div>
+          <button className="link-button" onClick={() => { setStep('form'); setError('') }} style={{ marginTop: 8 }}>
+            ← Back to registration
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -49,7 +196,7 @@ const RegisterPage = () => {
         <h2>Create your account</h2>
         <p>Set up a workspace for hiring, applying, and AI screening.</p>
       </div>
-      <form className="form-grid" onSubmit={handleSubmit}>
+      <form className="form-grid" onSubmit={handleSendOtp}>
         <div className="form-row">
           <label>Full name</label>
           <div className="icon-input">
@@ -112,8 +259,15 @@ const RegisterPage = () => {
         )}
         {error && <div className="form-error"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>{error}</div>}
         <button className="button" type="submit" disabled={submitting} id="register-submit">
-          {submitting ? <><span className="btn-spinner" /> Creating account...</> : 'Create account'}
+          {submitting ? <><span className="btn-spinner" /> Sending verification...</> : 'Continue with Email Verification'}
         </button>
+        <p className="otp-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{verticalAlign:'text-bottom', marginRight:4}}>
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          A 6-digit verification code will be sent to your email
+        </p>
       </form>
       <div className="auth-footer">
         Already have an account? <Link to="/auth/login">Sign in</Link>

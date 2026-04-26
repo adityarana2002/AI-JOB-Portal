@@ -3,15 +3,19 @@ package com.portal.job.service;
 import com.portal.job.dto.JobRequest;
 import com.portal.job.dto.JobResponse;
 import com.portal.job.entity.Job;
+import com.portal.job.entity.JobBookmark;
+import com.portal.job.repository.JobBookmarkRepository;
 import com.portal.job.repository.JobRepository;
 import com.portal.user.entity.Role;
 import com.portal.user.entity.User;
 import com.portal.user.repository.UserRepository;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -20,6 +24,7 @@ public class JobService {
 
     private final JobRepository jobRepository;
     private final UserRepository userRepository;
+    private final JobBookmarkRepository jobBookmarkRepository;
 
     public JobResponse createJob(JobRequest request, Authentication authentication) {
         User employer = getCurrentUser(authentication);
@@ -108,6 +113,39 @@ public class JobService {
         if (job.getEmployer() == null || !job.getEmployer().getId().equals(employer.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not job owner");
         }
+    }
+
+    @Transactional
+    public Map<String, Boolean> toggleBookmark(Long jobId, Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        Job job = getJobOrThrow(jobId);
+
+        jobBookmarkRepository.findByUserIdAndJobId(user.getId(), jobId).ifPresentOrElse(
+            b -> jobBookmarkRepository.deleteByUserIdAndJobId(user.getId(), jobId),
+            () -> {
+                JobBookmark bookmark = new JobBookmark();
+                bookmark.setUser(user);
+                bookmark.setJob(job);
+                jobBookmarkRepository.save(bookmark);
+            }
+        );
+
+        boolean nowSaved = jobBookmarkRepository.existsByUserIdAndJobId(user.getId(), jobId);
+        return Map.of("saved", nowSaved);
+    }
+
+    public List<JobResponse> getSavedJobs(Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        return jobBookmarkRepository.findActiveBookmarksByUserId(user.getId())
+            .stream()
+            .map(b -> JobResponse.fromEntity(b.getJob()))
+            .toList();
+    }
+
+    public Map<String, Boolean> checkBookmark(Long jobId, Authentication authentication) {
+        User user = getCurrentUser(authentication);
+        boolean saved = jobBookmarkRepository.existsByUserIdAndJobId(user.getId(), jobId);
+        return Map.of("saved", saved);
     }
 
     private void applyRequest(Job job, JobRequest request) {

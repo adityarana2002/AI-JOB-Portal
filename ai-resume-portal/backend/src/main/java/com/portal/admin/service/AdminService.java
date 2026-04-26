@@ -10,6 +10,8 @@ import com.portal.ai.entity.ScreeningResult;
 import com.portal.ai.repository.ScreeningResultRepository;
 import com.portal.application.dto.ApplicationResponse;
 import com.portal.application.repository.ApplicationRepository;
+import com.portal.audit.entity.AuditAction;
+import com.portal.audit.service.AuditLogService;
 import com.portal.job.dto.JobResponse;
 import com.portal.job.repository.JobRepository;
 import com.portal.user.entity.Role;
@@ -32,6 +34,7 @@ public class AdminService {
     private final ApplicationRepository applicationRepository;
     private final ScreeningResultRepository screeningResultRepository;
     private final ObjectMapper objectMapper;
+    private final AuditLogService auditLogService;
 
     public AdminDashboardResponse getDashboard(Authentication authentication) {
         requireSuperAdmin(authentication);
@@ -60,7 +63,12 @@ public class AdminService {
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         user.setIsActive(request.isActive());
-        return AdminUserResponse.fromUser(userRepository.save(user));
+        AdminUserResponse response = AdminUserResponse.fromUser(userRepository.save(user));
+        User admin = getCurrentUser(authentication);
+        auditLogService.log(admin.getId(), admin.getEmail(),
+            AuditAction.USER_STATUS_CHANGED, "USER", userId,
+            "Set isActive=" + request.isActive() + " for " + user.getEmail());
+        return response;
     }
 
     public List<JobResponse> getJobs(Authentication authentication) {

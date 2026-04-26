@@ -35,3 +35,33 @@ export interface ScreeningReport {
   summary?: string | null
   createdAt?: string | null
 }
+
+export type AuditAction =
+  | 'USER_CREATED'
+  | 'JOB_POSTED'
+  | 'JOB_CLOSED'
+  | 'APPLICATION_SUBMITTED'
+  | 'APPLICATION_STATUS_CHANGED'
+  | 'APPLICATION_WITHDRAWN'
+  | 'INTERVIEW_SCHEDULED'
+  | 'INTERVIEW_CANCELLED'
+  | 'USER_STATUS_CHANGED'
+
+export interface AuditLogEntry {
+  id: number
+  actorId?: number | null
+  actorEmail?: string | null
+  action: AuditAction
+  targetType?: string | null
+  targetId?: number | null
+  detail?: string | null
+  createdAt?: string | null
+}
+
+export interface PaginatedResponse<T> {
+  content: T[]
+  totalElements: number
+  totalPages: number
+  number: number
+  size: number
+}

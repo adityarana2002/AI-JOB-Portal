@@ -10,16 +10,22 @@ import EmployerDashboard from '../pages/employer/Dashboard'
 import PostJob from '../pages/employer/PostJob'
 import MyJobs from '../pages/employer/MyJobs'
 import ViewApplicants from '../pages/employer/ViewApplicants'
+import EmployerInterviews from '../pages/employer/EmployerInterviews'
 import JobSeekerDashboard from '../pages/jobseeker/Dashboard'
 import BrowseJobs from '../pages/jobseeker/BrowseJobs'
 import ApplyJob from '../pages/jobseeker/ApplyJob'
 import MyApplications from '../pages/jobseeker/MyApplications'
 import ScreeningResult from '../pages/jobseeker/ScreeningResult'
+import MyInterviews from '../pages/jobseeker/MyInterviews'
+import SavedJobs from '../pages/jobseeker/SavedJobs'
 import AdminDashboard from '../pages/admin/Dashboard'
 import UserManagement from '../pages/admin/UserManagement'
 import AllJobs from '../pages/admin/AllJobs'
 import AllApplicants from '../pages/admin/AllApplicants'
 import ScreeningReports from '../pages/admin/ScreeningReports'
+import AuditLogs from '../pages/admin/AuditLogs'
+import NotificationsPage from '../pages/shared/NotificationsPage'
+import ProfilePage from '../pages/shared/ProfilePage'
 import { getHomePath } from './routeUtils'
 import type { UserRole } from '../types/user'
 
@@ -95,6 +101,9 @@ const AppRouter = () => (
         <Route path="post-job" element={<PostJob />} />
         <Route path="my-jobs" element={<MyJobs />} />
         <Route path="jobs/:jobId/applicants" element={<ViewApplicants />} />
+        <Route path="interviews" element={<EmployerInterviews />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
     </Route>
 
@@ -106,6 +115,10 @@ const AppRouter = () => (
         <Route path="apply/:jobId" element={<ApplyJob />} />
         <Route path="applications" element={<MyApplications />} />
         <Route path="screening/:applicationId" element={<ScreeningResult />} />
+        <Route path="interviews" element={<MyInterviews />} />
+        <Route path="saved-jobs" element={<SavedJobs />} />
+        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
     </Route>
 
@@ -117,6 +130,7 @@ const AppRouter = () => (
         <Route path="jobs" element={<AllJobs />} />
         <Route path="applications" element={<AllApplicants />} />
         <Route path="screenings" element={<ScreeningReports />} />
+        <Route path="audit-logs" element={<AuditLogs />} />
       </Route>
     </Route>
 

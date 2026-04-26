@@ -1,0 +1,11 @@
+package com.portal.notification.entity;
+
+public enum NotificationType {
+    INTERVIEW_SCHEDULED,
+    INTERVIEW_CONFIRMED,
+    INTERVIEW_DECLINED,
+    INTERVIEW_CANCELLED,
+    INTERVIEW_RESCHEDULED,
+    APPLICATION_STATUS_CHANGED,
+    NEW_APPLICATION
+}

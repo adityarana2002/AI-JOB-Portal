@@ -41,4 +41,19 @@ const getRankings = async (jobId: number) => {
   return data
 }
 
-export default { listJobs, getJob, createJob, updateJob, deleteJob, getMyJobs, getApplicants, getRankings }
+const toggleBookmark = async (jobId: number): Promise<{ saved: boolean }> => {
+  const { data } = await api.post<{ saved: boolean }>(`/jobs/${jobId}/bookmark`)
+  return data
+}
+
+const getSavedJobs = async (): Promise<Job[]> => {
+  const { data } = await api.get<Job[]>('/jobs/saved')
+  return data
+}
+
+const checkBookmark = async (jobId: number): Promise<boolean> => {
+  const { data } = await api.get<{ saved: boolean }>(`/jobs/${jobId}/bookmark`)
+  return data.saved
+}
+
+export default { listJobs, getJob, createJob, updateJob, deleteJob, getMyJobs, getApplicants, getRankings, toggleBookmark, getSavedJobs, checkBookmark }

@@ -1,4 +1,4 @@
-export type ApplicationStatus = 'PENDING' | 'SCREENING' | 'SCREENED' | 'SHORTLISTED' | 'REJECTED'
+export type ApplicationStatus = 'PENDING' | 'SCREENING' | 'SCREENED' | 'SHORTLISTED' | 'REJECTED' | 'WITHDRAWN'
 
 export interface Application {
   id: number
@@ -22,5 +22,20 @@ export interface CandidateRanking {
   status: ApplicationStatus
   matchScore?: number | null
   rankingReason?: string | null
+  coverLetter?: string | null
   createdAt?: string | null
+}
+
+export interface EmployerStats {
+  activeJobs: number
+  totalApplications: number
+  shortlistedCount: number
+  avgMatchScore: number
+}
+
+export interface JobSeekerStats {
+  totalApplications: number
+  highMatchCount: number
+  shortlistedCount: number
+  pendingCount: number
 }

@@ -25,6 +25,23 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
+  # ==================== EMAIL (SMTP) ====================
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: aditya812611@gmail.com
+    password: xtanqhxbpcvwjnmd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
   # ==================== FILE UPLOAD ====================
   servlet:
     multipart:
@@ -38,7 +55,7 @@ spring:
       base-url: http://localhost:11434
       chat:
         options:
-          model: deepseek-coder:6.7b
+          model: llama3:8b
           temperature: 0.0
           num-predict: 4096
 

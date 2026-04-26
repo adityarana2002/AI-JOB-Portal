@@ -8,6 +8,13 @@ export interface UserProfile {
   phone?: string | null
   companyName?: string | null
   isActive?: boolean
+  createdAt?: string
+}
+
+export interface UpdateProfileRequest {
+  fullName?: string
+  phone?: string
+  companyName?: string
 }
 
 export interface LoginPayload {

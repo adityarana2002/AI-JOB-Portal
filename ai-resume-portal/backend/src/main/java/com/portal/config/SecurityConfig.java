@@ -46,10 +46,14 @@ public class SecurityConfig {
                     "/swagger-ui.html"
                 ).permitAll()
                 .requestMatchers("/api/admin/**").authenticated()
+                .requestMatchers("/api/employer/**").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs/*/applicants", "/api/jobs/*/rankings").authenticated()
-                .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs").authenticated()
+                .requestMatchers(HttpMethod.GET, "/api/jobs/my-jobs", "/api/jobs/saved").authenticated()
                 .requestMatchers(HttpMethod.GET, "/api/jobs", "/api/jobs/*").permitAll()
                 .requestMatchers("/api/applications/**").authenticated()
+                .requestMatchers("/api/interviews/**").authenticated()
+                .requestMatchers("/api/notifications/**").authenticated()
+                .requestMatchers("/api/users/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/api/ai/test").hasRole("SUPER_ADMIN")
                 .anyRequest().authenticated()
             );
@@ -77,7 +81,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:3000"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
         return new UrlBasedCorsConfigurationSource() {{

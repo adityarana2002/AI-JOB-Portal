@@ -1,5 +1,7 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useEffect, useState } from 'react'
+import notificationService from '../services/notificationService'
 
 export interface NavItem {
   label: string
@@ -16,10 +18,26 @@ interface AppShellProps {
 
 const AppShell = ({ title, roleLabel, roleBadgeClass, navItems }: AppShellProps) => {
   const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [unreadCount, setUnreadCount] = useState(0)
 
   const initials = user?.fullName
     ? user.fullName.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
     : '?'
+
+  // Load unread count on mount and poll every 30s
+  useEffect(() => {
+    const loadUnread = () => {
+      notificationService.getUnreadCount().then(setUnreadCount).catch(() => {})
+    }
+    loadUnread()
+    const interval = setInterval(loadUnread, 30000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const roleNotifPath = user?.role === 'EMPLOYER' ? '/employer/notifications'
+    : user?.role === 'SUPER_ADMIN' ? '/admin/dashboard'
+    : '/jobseeker/notifications'
 
   return (
     <div className="app-shell">
@@ -61,6 +79,19 @@ const AppShell = ({ title, roleLabel, roleBadgeClass, navItems }: AppShellProps)
         <header className="topbar">
           <h2>{title}</h2>
           <div className="topbar-right">
+            <button
+              className="topbar-bell"
+              onClick={() => navigate(roleNotifPath)}
+              title="Notifications"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              {unreadCount > 0 && (
+                <span className="bell-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
+              )}
+            </button>
             <span className="badge accent">{user?.email}</span>
           </div>
         </header>

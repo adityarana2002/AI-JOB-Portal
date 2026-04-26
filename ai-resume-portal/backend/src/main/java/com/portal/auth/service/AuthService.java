@@ -5,6 +5,7 @@ import com.portal.auth.dto.LoginRequest;
 import com.portal.auth.dto.RegisterRequest;
 import com.portal.auth.dto.UserProfileResponse;
 import com.portal.auth.util.JwtTokenProvider;
+import com.portal.notification.service.EmailService;
 import com.portal.user.entity.Role;
 import com.portal.user.entity.User;
 import com.portal.user.repository.UserRepository;
@@ -28,6 +29,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomUserDetailsService userDetailsService;
+    private final EmailService emailService;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -48,6 +50,7 @@ public class AuthService {
         User savedUser = userRepository.save(user);
         UserDetails userDetails = userDetailsService.loadUserByUsername(savedUser.getEmail());
         String token = jwtTokenProvider.generateToken(userDetails);
+        emailService.sendWelcomeEmail(savedUser);
         return AuthResponse.fromUser(savedUser, token);
     }
 

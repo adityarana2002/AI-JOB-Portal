@@ -8,6 +8,7 @@ import com.portal.job.dto.JobResponse;
 import com.portal.job.service.JobService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -83,5 +84,29 @@ public class JobController {
     ) {
         jobService.deleteJob(id, authentication);
         return ResponseEntity.noContent().build();
+    }
+
+    /** Job Seeker: toggle save/unsave a job */
+    @PostMapping("/{id}/bookmark")
+    public ResponseEntity<Map<String, Boolean>> toggleBookmark(
+        @PathVariable Long id,
+        Authentication authentication
+    ) {
+        return ResponseEntity.ok(jobService.toggleBookmark(id, authentication));
+    }
+
+    /** Job Seeker: get all saved (bookmarked) jobs */
+    @GetMapping("/saved")
+    public ResponseEntity<List<JobResponse>> getSavedJobs(Authentication authentication) {
+        return ResponseEntity.ok(jobService.getSavedJobs(authentication));
+    }
+
+    /** Job Seeker: check if a specific job is bookmarked */
+    @GetMapping("/{id}/bookmark")
+    public ResponseEntity<Map<String, Boolean>> checkBookmark(
+        @PathVariable Long id,
+        Authentication authentication
+    ) {
+        return ResponseEntity.ok(jobService.checkBookmark(id, authentication));
     }
 }

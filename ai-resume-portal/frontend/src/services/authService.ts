@@ -16,4 +16,14 @@ const me = async () => {
   return data
 }
 
-export default { login, register, me }
+const sendOtp = async (email: string) => {
+  const { data } = await api.post<{ message: string }>('/auth/send-otp', { email })
+  return data
+}
+
+const verifyOtp = async (email: string, otp: string) => {
+  const { data } = await api.post<{ verified: boolean }>('/auth/verify-otp', { email, otp })
+  return data.verified
+}
+
+export default { login, register, me, sendOtp, verifyOtp }

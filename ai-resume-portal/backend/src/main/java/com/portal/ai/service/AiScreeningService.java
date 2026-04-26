@@ -74,11 +74,7 @@ public class AiScreeningService {
                 jobTitle
             );
             learningPlanRaw = callModel(learningPrompt);
-            learningPlan = parseResponse(
-                learningPlanRaw,
-                new TypeReference<List<LearningPlanItem>>() {},
-                "learning plan"
-            );
+            learningPlan = parseLearningPlan(learningPlanRaw);
 
             String youtubePrompt = PromptTemplates.buildYoutubePrompt(screening.getMissingSkills());
             youtubeRaw = callModel(youtubePrompt);
@@ -116,7 +112,73 @@ public class AiScreeningService {
         }
         String prompt = PromptTemplates.buildLearningPlanPrompt(missingSkills, jobTitle);
         String raw = callModel(prompt);
-        return parseResponse(raw, new TypeReference<List<LearningPlanItem>>() {}, "learning plan");
+        return parseLearningPlan(raw);
+    }
+
+    /**
+     * Parses the AI response for a learning plan.
+     * Primary path: structured List<LearningPlanItem> JSON.
+     * Fallback: flat string array (small models sometimes return this) — wraps
+     * the tasks in groups of 3 into synthetic LearningPlanItem objects.
+     */
+    private List<LearningPlanItem> parseLearningPlan(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return Collections.emptyList();
+        }
+        String json = extractJson(raw);
+        if (json == null || json.isBlank()) {
+            return Collections.emptyList();
+        }
+
+        // Try normal structured parse first
+        for (String candidate : buildParseCandidates(json)) {
+            try {
+                List<LearningPlanItem> result = lenientMapper().readValue(
+                    candidate, new TypeReference<List<LearningPlanItem>>() {});
+                if (result != null && !result.isEmpty()) {
+                    return result;
+                }
+            } catch (Exception ignored) {
+                // try next candidate
+            }
+        }
+
+        // Fallback: model returned a flat string array
+        for (String candidate : buildParseCandidates(json)) {
+            try {
+                List<String> flatTasks = lenientMapper().readValue(
+                    candidate, new TypeReference<List<String>>() {});
+                if (flatTasks != null && !flatTasks.isEmpty()) {
+                    return wrapFlatTasksIntoLearningPlan(flatTasks);
+                }
+            } catch (Exception ignored) {
+                // try next candidate
+            }
+        }
+
+        throw parseFailure("learning plan", raw, null);
+    }
+
+    /**
+     * Converts a flat list of task strings (from a misbehaving small model) into
+     * grouped LearningPlanItem objects — 3 tasks per day.
+     */
+    private List<LearningPlanItem> wrapFlatTasksIntoLearningPlan(List<String> tasks) {
+        List<LearningPlanItem> plan = new ArrayList<>();
+        int tasksPerDay = 3;
+        int dayNum = 1;
+        for (int i = 0; i < tasks.size(); i += tasksPerDay) {
+            List<String> dayTasks = new ArrayList<>(tasks.subList(i, Math.min(i + tasksPerDay, tasks.size())));
+            LearningPlanItem item = new LearningPlanItem();
+            item.setDay("Day " + dayNum);
+            item.setTopic(dayTasks.get(0));
+            item.setTasks(dayTasks);
+            item.setHours(dayNum <= 3 ? 3 : 2);
+            item.setPriority(dayNum <= 4 ? "HIGH" : "MEDIUM");
+            plan.add(item);
+            dayNum++;
+        }
+        return plan;
     }
 
     public List<YoutubeRecommendation> generateYoutubeRecommendations(List<String> missingSkills) {
@@ -125,7 +187,33 @@ public class AiScreeningService {
         }
         String prompt = PromptTemplates.buildYoutubePrompt(missingSkills);
         String raw = callModel(prompt);
-        return parseResponse(raw, new TypeReference<List<YoutubeRecommendation>>() {}, "youtube recommendations");
+        return parseYoutubeRecommendations(raw);
+    }
+
+    /**
+     * Parses YouTube recommendations safely — never throws.
+     * Returns an empty list if the model output cannot be parsed.
+     */
+    private List<YoutubeRecommendation> parseYoutubeRecommendations(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return Collections.emptyList();
+        }
+        String json = extractJson(raw);
+        if (json == null || json.isBlank()) {
+            return Collections.emptyList();
+        }
+        for (String candidate : buildParseCandidates(json)) {
+            try {
+                List<YoutubeRecommendation> result = lenientMapper().readValue(
+                    candidate, new TypeReference<List<YoutubeRecommendation>>() {});
+                if (result != null && !result.isEmpty()) {
+                    return result;
+                }
+            } catch (Exception ignored) {
+                // try next candidate
+            }
+        }
+        return Collections.emptyList(); // graceful fallback, don't crash screening
     }
 
     private String callModel(String prompt) {
@@ -145,17 +233,28 @@ public class AiScreeningService {
         }
 
         String cleaned = sanitizeRaw(raw);
-        List<String> objectCandidates = extractBalancedSegments(cleaned, '{', '}');
+        String trimmed = cleaned.trim();
+
+        // If the cleaned output starts with '[', extract the array first
+        if (trimmed.startsWith("[")) {
+            List<String> arrayCandidates = extractBalancedSegments(trimmed, '[', ']');
+            if (!arrayCandidates.isEmpty()) {
+                return arrayCandidates.get(0);
+            }
+        }
+
+        // Otherwise prefer objects
+        List<String> objectCandidates = extractBalancedSegments(trimmed, '{', '}');
         if (!objectCandidates.isEmpty()) {
             return objectCandidates.get(0);
         }
 
-        List<String> arrayCandidates = extractBalancedSegments(cleaned, '[', ']');
+        List<String> arrayCandidates = extractBalancedSegments(trimmed, '[', ']');
         if (!arrayCandidates.isEmpty()) {
             return arrayCandidates.get(0);
         }
 
-        return cleaned.trim();
+        return trimmed;
     }
 
     private <T> T parseResponse(String raw, Class<T> type, String stage) {

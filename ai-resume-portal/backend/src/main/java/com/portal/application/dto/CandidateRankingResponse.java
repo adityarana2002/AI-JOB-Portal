@@ -22,6 +22,7 @@ public class CandidateRankingResponse {
     private ApplicationStatus status;
     private Integer matchScore;
     private String rankingReason;
+    private String coverLetter;
     private LocalDateTime createdAt;
 
     public static CandidateRankingResponse fromEntities(
@@ -43,6 +44,7 @@ public class CandidateRankingResponse {
 
         response.setStatus(application.getStatus());
         response.setCreatedAt(application.getCreatedAt());
+        response.setCoverLetter(application.getCoverLetter());
 
         Integer score = screeningResult != null ? screeningResult.getMatchScore() : null;
         response.setMatchScore(score);

@@ -5,5 +5,6 @@ public enum ApplicationStatus {
     SCREENING,
     SCREENED,
     SHORTLISTED,
-    REJECTED
+    REJECTED,
+    WITHDRAWN
 }
